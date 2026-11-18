@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
-describe('Rogers Network Guardian', () => {
+describe('Network Guardian', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     window.history.pushState({}, '', '/')
@@ -84,5 +84,17 @@ describe('Rogers Network Guardian', () => {
     await user.click(screen.getByRole('button', { name: /microsoft foundry/i }))
     expect(screen.getByRole('heading', { name: 'Microsoft Foundry' })).toBeInTheDocument()
     expect(screen.getByText(/production implementation would require approved integrations/i)).toBeInTheDocument()
+  })
+
+  it('opens the Customer Zero story and steps through the Kuala Lumpur repair', async () => {
+    vi.useRealTimers()
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('link', { name: /customer zero/i }))
+    expect(screen.getByRole('heading', { name: /AI agents operating the Azure backbone/i })).toBeInTheDocument()
+    expect(screen.getByText('550,000+ km')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^next/i }))
+    expect(screen.getByText(/Critical Azure impact detected/i)).toBeInTheDocument()
+    expect(screen.getByText('Microsoft Confidential')).toBeInTheDocument()
   })
 })

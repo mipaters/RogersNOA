@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { agents, architectureLayers, scenarios } from './data'
+import { CustomerZeroPage } from './CustomerZeroPage'
 import type { Agent, AuditEvent, AutonomyMode, Scenario, ScenarioStep } from './types'
 import { useScenarioEngine } from './useScenarioEngine'
 
@@ -15,6 +16,7 @@ type AgentDrawerState = { agent: Agent; step?: ScenarioStep } | null
 
 const navItems = [
   ['/', 'Command Center', Activity],
+  ['/customer-zero', 'Customer Zero', Network],
   ['/scenarios', 'Scenarios', Sparkles],
   ['/agents', 'Agent Operations', Bot],
   ['/map', 'Network Map', Map],
@@ -46,6 +48,7 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<CommandCenter engine={engine} openAgent={openAgent} openTrace={() => setTraceOpen(true)} openTicket={() => setTicketOpen(true)} />} />
+              <Route path="/customer-zero" element={<CustomerZeroPage />} />
               <Route path="/scenarios" element={<ScenariosPage engine={engine} />} />
               <Route path="/agents" element={<AgentsPage engine={engine} openAgent={openAgent} />} />
               <Route path="/map" element={<NetworkMapPage engine={engine} />} />
@@ -53,6 +56,7 @@ function App() {
               <Route path="/architecture" element={<ArchitecturePage engine={engine} />} />
               <Route path="/governance" element={<GovernancePage engine={engine} />} />
             </Routes>
+            <footer className="confidential-footer">Microsoft Confidential</footer>
           </main>
         </div>
         {agentDrawer && <AgentDrawer state={agentDrawer} close={() => setAgentDrawer(null)} openTrace={() => setTraceOpen(true)} />}
@@ -70,7 +74,7 @@ function Header({ engine, onReset, onGuide }: { engine: Engine; onReset: () => v
       <div className="brand">
         <div className="brand-mark">NG</div>
         <div>
-          <strong>Rogers Network Guardian</strong>
+          <strong>Network Guardian</strong>
           <span>Autonomous Network Operations</span>
         </div>
       </div>

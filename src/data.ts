@@ -95,7 +95,7 @@ export const scenarios: Scenario[] = [
     risk: 'Peak-period performance degradation',
     outcome: 'Profile adjustment with plant inspection follow-up',
     incidentId: 'INC-NG-24097',
-    asset: 'ROG-DOCSIS-NODE-118 · SG-22',
+    asset: 'NET-DOCSIS-NODE-118 · SG-22',
     summary: 'Peak utilization and noise ingress drive intermittent connectivity and rising care contacts.',
     architecture: ['Fabric Real-Time Intelligence', 'Foundry IQ', 'Azure Functions', 'ServiceNow'],
     steps: [
@@ -251,4 +251,3 @@ export const architectureLayers = [
   { title: 'Network & Customer Data', items: ['Fibre and optical telemetry', 'CMTS and DOCSIS', 'CPE and Wi-Fi', 'Wireless RAN', 'Alarms, tickets, contacts, policies'] },
   { title: 'Security & Governance', items: ['Microsoft Entra ID', 'Microsoft Purview', 'Role-based controls', 'Human approval', 'Rollback and emergency stop'] },
 ]
-

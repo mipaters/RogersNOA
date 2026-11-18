@@ -1,8 +1,8 @@
-# Rogers Network Guardian
+# Network Guardian
 
 An executive-ready, simulated network operations command center demonstrating how a governed team of AI agents can detect, analyze, coordinate, resolve, validate, and communicate telecom incidents.
 
-> **Demo disclaimer:** All network data, customers, incidents, tickets, communications, actions, metrics, and business values are synthetic. The application does not connect to Rogers systems, make network changes, create tickets, or send messages.
+> **Demo disclaimer:** All network data, customers, incidents, tickets, communications, actions, metrics, and business values are synthetic. The application does not connect to live network systems, make network changes, create tickets, or send messages.
 
 ## Features
 
@@ -73,10 +73,10 @@ Add a strongly typed `Agent` entry to the agent registry in `src/data.ts`, then 
 
 ## Azure Static Web Apps
 
-`staticwebapp.config.json` provides SPA navigation fallback to `index.html`. The sample workflow in `.github/workflows/azure-static-web-apps.yml` uses:
+`staticwebapp.config.json` provides SPA navigation fallback to `index.html`. The Azure-generated workflow in `.github/workflows/azure-static-web-apps-thankful-water-0aba68f0f.yml` uses:
 
 - `app_location: "/"`
 - `api_location: ""`
 - `output_location: "dist"`
 
-Create an Azure Static Web App and add its deployment token as the `AZURE_STATIC_WEB_APPS_API_TOKEN` repository secret before enabling deployment.
+The repository is configured with its Azure Static Web Apps deployment secret. Pushes to `main` build and deploy the `dist` output automatically.
