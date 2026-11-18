@@ -6,7 +6,7 @@ An executive-ready, simulated network operations command center demonstrating ho
 
 ## Features
 
-- Six distinct fibre, DOCSIS, CPE, capacity, and wireless scenarios
+- Seven distinct fibre, DOCSIS, CPE, capacity, wireless, and IMS voice scenarios
 - Deterministic multi-agent workflow simulation with adjustable speed
 - Observe, Assist, Governed Autonomy, and Level 4 Simulation modes
 - Human approval, rejection, extra-analysis, rollback, and emergency-stop experiences
@@ -48,6 +48,7 @@ The production output is written to `dist`.
 4. **Proactive DOCSIS Capacity** — predicts a threshold breach and creates headroom before customer experience degrades.
 5. **Wireless Capacity Hotspot** — treats radio congestion during a synthetic stadium event as an additional wireless scenario.
 6. **Tower Backhaul & Power** — coordinates transport, power, field, vendor, and RAN actions for a spreading site-cluster risk.
+7. **IMS Voice Core Hardware Failure** — isolates a failed SBC line card, drains sessions to redundant capacity, coordinates hardware replacement, and validates voice-service recovery.
 
 ## Guided demo walkthrough
 

@@ -97,4 +97,15 @@ describe('Network Guardian', () => {
     expect(screen.getByText(/Critical Azure impact detected/i)).toBeInTheDocument()
     expect(screen.getByText('Microsoft Confidential')).toBeInTheDocument()
   })
+
+  it('loads the IMS hardware failure scenario and its Voice Assurance Agent', async () => {
+    vi.useRealTimers()
+    const user = userEvent.setup()
+    render(<App />)
+    fireEvent.change(screen.getByLabelText('Selected scenario'), { target: { value: 'ims-hardware' } })
+    expect(screen.getByRole('heading', { name: 'IMS Voice Core Hardware Failure' })).toBeInTheDocument()
+    expect(screen.getByText('IMS-SBC-GTA-02 · line card LC-3')).toBeInTheDocument()
+    await user.click(screen.getAllByText('Identify failed SBC line card')[0])
+    expect(screen.getByRole('heading', { name: 'Voice Assurance Agent' })).toBeInTheDocument()
+  })
 })

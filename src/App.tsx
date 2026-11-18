@@ -207,6 +207,9 @@ function ActivityPanel({ engine, openAgent, openTrace }: { engine: Engine; openA
   const [tab, setTab] = useState('Agent Activity')
   const tabs = ['Agent Activity', 'Evidence', 'Tool Calls', 'Communications', 'Audit Log']
   const events = [...engine.audit].reverse()
+  const communicationPreviews = engine.scenario.id === 'ims-hardware'
+    ? ['Teams voice incident approval card', 'NOC IMS incident update', 'Voice-core technician dispatch', 'Hardware supplier RMA escalation', 'Enterprise SIP trunk bulletin', 'Customer-care voice advisory', 'Executive incident summary']
+    : ['Teams approval card', 'NOC incident update', 'Field dispatch', 'Customer-care bulletin', 'Executive summary']
   return (
     <section className="panel activity-panel">
       <PanelHeader icon={<Activity size={18} />} title="Live activity & evidence" />
@@ -219,7 +222,7 @@ function ActivityPanel({ engine, openAgent, openTrace }: { engine: Engine; openA
         )).reverse()}
         {tab === 'Evidence' && (engine.scenario.steps[engine.current]?.evidence ?? engine.scenario.steps[0].evidence).map((item) => <FeedText key={item} title={item} text="Synthetic source · grounded and attributed for this demonstration." />)}
         {tab === 'Tool Calls' && (engine.scenario.steps[engine.current]?.toolCalls ?? engine.scenario.steps[0].toolCalls).map((item) => <FeedText key={item} title={item} text="Completed against local synthetic data in 620 ms." />)}
-        {tab === 'Communications' && ['Teams approval card', 'NOC incident update', 'Field dispatch', 'Customer-care bulletin', 'Executive summary'].map((item) => <FeedText key={item} title={item} text="Preview generated from scenario data · not sent." />)}
+        {tab === 'Communications' && communicationPreviews.map((item) => <FeedText key={item} title={item} text="Preview generated from scenario data · not sent." />)}
         {tab === 'Audit Log' && events.map((event) => <AuditRow event={event} key={event.id} />)}
         {tab === 'Audit Log' && <button className="button secondary wide" onClick={openTrace}>Open full trace</button>}
         {engine.current < 0 && tab === 'Agent Activity' && <EmptyState icon={<Play size={22} />} title="Ready to simulate" text="Start the scenario to watch the agent team coordinate in real time." />}
@@ -255,7 +258,7 @@ function AgentsPage({ engine, openAgent }: { engine: Engine; openAgent: (id: str
     <div className="page">
       <PageIntro eyebrow="Agent Operations" title="Reusable Network Operations Agent team" text="Health, ownership, tools, and governance remain visible across every scenario." />
       <div className="agent-summary">
-        <Stat value="18" label="Registered agents" /><Stat value="100%" label="Guardrail checks" /><Stat value="742 ms" label="Avg. simulated latency" /><Stat value="98.6%" label="Demo success rate" />
+        <Stat value={String(agents.length)} label="Registered agents" /><Stat value="100%" label="Guardrail checks" /><Stat value="742 ms" label="Avg. simulated latency" /><Stat value="98.6%" label="Demo success rate" />
       </div>
       <div className="agent-grid">
         {agents.map((agent) => <button key={agent.id} className={`agent-card ${activeIds.has(agent.id) ? 'participating' : ''}`} onClick={() => openAgent(agent.id)}>
@@ -358,7 +361,7 @@ function TraceModal({ engine, close }: { engine: Engine; close: () => void }) {
 }
 
 function TicketDrawer({ engine, close }: { engine: Engine; close: () => void }) {
-  const rootStep = engine.scenario.steps.find((step) => step.agentId === 'root-cause' || step.agentId === 'docsis' || step.agentId === 'cpe')
+  const rootStep = engine.scenario.steps.find((step) => step.agentId === 'root-cause' || step.agentId === 'docsis' || step.agentId === 'cpe' || step.agentId === 'voice')
   return <div className="drawer-backdrop" onMouseDown={close}><aside className="drawer ticket-drawer" onMouseDown={(event) => event.stopPropagation()}><button className="close-button" onClick={close}><X /></button><span className="eyebrow">Simulated ITSM record</span><h1>{engine.scenario.incidentId}</h1><p>TM Forum-style terminology for demonstration only; no live certified integration is claimed.</p><div className="drawer-section"><DataPair label="Title" value={engine.scenario.name} /><DataPair label="Severity" value={engine.scenario.severity} /><DataPair label="Status" value={engine.complete ? 'Resolved' : engine.current < 0 ? 'New' : 'In progress'} /><DataPair label="Domain" value={engine.scenario.domain} /><DataPair label="Affected assets" value={engine.scenario.asset} /><DataPair label="Customers impacted" value={engine.scenario.customers} /><DataPair label="Root cause" value={rootStep?.decision ?? 'Under investigation'} /><DataPair label="Assigned team" value="Network Operations Command Centre" /><DataPair label="Remediation" value={engine.scenario.outcome} /><DataPair label="Validation" value={engine.complete ? 'Passed' : 'Pending'} /></div><div className="drawer-section"><h3>Agent-generated work notes</h3>{engine.audit.map((event) => <AuditRow event={event} key={event.id} />)}</div></aside></div>
 }
 

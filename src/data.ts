@@ -10,6 +10,7 @@ export const agents: Agent[] = [
   ['fibre', 'Fibre Assurance Agent', 'Optical analysis', 'Analyzes OLT, ONT, optical paths, and fibre routes.', ['Optical Query', 'Route Analyzer'], ['Fibre topology', 'Optical thresholds']],
   ['cpe', 'CPE Diagnostic Agent', 'In-home diagnostics', 'Analyzes gateways, Wi-Fi, mesh, firmware, and reboots.', ['CPE Telemetry', 'Cohort Compare'], ['Device firmware', 'Care playbooks']],
   ['wireless', 'Wireless Optimization Agent', 'RAN optimization', 'Analyzes radio capacity, sessions, mobility, and backhaul.', ['RAN Optimizer', 'Event Schedule'], ['Radio policy', 'Capacity models']],
+  ['voice', 'Voice Assurance Agent', 'IMS and voice assurance', 'Analyzes IMS registration, SIP signaling, session border controllers, media quality, and voice-core hardware health.', ['IMS Telemetry', 'SIP Trace Analyzer', 'Hardware Inventory'], ['IMS topology', 'Voice recovery runbooks']],
   ['forecast', 'Capacity Forecasting Agent', 'Capacity prediction', 'Predicts demand and identifies capacity risks.', ['Forecast Model', 'Scenario Planner'], ['Demand history', 'Event forecasts']],
   ['remediation', 'Remediation Agent', 'Controlled remediation', 'Creates and executes simulated policy-approved actions.', ['Runbook Executor', 'Rollback Manager'], ['Approved procedures', 'Change policy']],
   ['field', 'Field Operations Agent', 'Dispatch planning', 'Selects skills, crews, parts, access, and dispatch timing.', ['Workforce Manager', 'Parts Lookup'], ['Crew skills', 'Site access']],
@@ -240,6 +241,85 @@ export const scenarios: Scenario[] = [
       { label: 'Site availability', before: 81, after: 99.4, unit: '%', better: 'up' },
     ],
   },
+  {
+    id: 'ims-hardware',
+    name: 'IMS Voice Core Hardware Failure',
+    domain: 'Voice / IMS core',
+    severity: 'Critical',
+    detection: 'IMS signaling + chassis hardware alarms',
+    customers: '32,400 voice sessions / 146 enterprise SIP trunks',
+    risk: 'Failed call setup, registration loss, and emergency-calling exposure',
+    outcome: 'Traffic drained to redundant capacity and failed line card isolated for replacement',
+    incidentId: 'INC-NG-24121',
+    asset: 'IMS-SBC-GTA-02 · line card LC-3',
+    summary: 'A hardware fault on an IMS session border controller line card causes interface errors, SIP failures, and spreading voice-service degradation.',
+    architecture: ['Fabric Eventhouse', 'Foundry IQ', 'IMS APIs', 'ServiceNow', 'Teams'],
+    steps: [
+      step('detect', 'Detect voice-service degradation', 'monitoring', 'Detected a sharp fall in call setup and registration success alongside SIP 503 responses and chassis alarms.', {
+        confidence: 98,
+        evidence: ['IMS call-control KPIs', 'SIP response-code telemetry', 'SBC chassis alarm stream'],
+        toolCalls: ['Query IMS telemetry', 'Read SBC hardware alarms'],
+      }),
+      step('correlate', 'Correlate signaling and hardware alarms', 'correlation', 'Grouped interface errors, line-card resets, registration retries, and SIP failures into one probable voice-core incident.', {
+        evidence: ['SBC interface counters', 'SIP transaction failures', 'IMS topology relationships'],
+        toolCalls: ['Correlate alarm cluster', 'Query IMS topology graph'],
+      }),
+      step('diagnose', 'Identify failed SBC line card', 'voice', 'Distinguished the LC-3 hardware fault from a software, routing, or downstream media-network issue.', {
+        confidence: 96,
+        evidence: ['LC-3 reset history', 'CRC and interface error counters', 'Redundant SBC health', 'SIP trace samples'],
+        toolCalls: ['Analyze SIP traces', 'Compare redundant SBC health', 'Query hardware inventory'],
+      }),
+      step('impact', 'Quantify voice-service exposure', 'impact', 'Mapped the failed hardware path to active voice sessions, enterprise SIP trunks, and emergency-calling exposure.', {
+        evidence: ['Subscriber registration mapping', 'Enterprise trunk inventory', 'Emergency-calling route dependencies'],
+        toolCalls: ['Map IMS services', 'Calculate voice blast radius'],
+      }),
+      step('plan', 'Prepare controlled traffic drain', 'voice', 'Prepared a stateful drain of new sessions to the redundant SBC while preserving established calls where possible.', {
+        confidence: 94,
+        evidence: ['Redundant capacity headroom', 'Session distribution', 'Voice failover runbook'],
+        toolCalls: ['Simulate session drain', 'Validate redundant capacity'],
+      }),
+      step('ticket', 'Open critical voice incident', 'ticketing', 'Created a simulated critical IMS incident and attached hardware, signaling, impact, and recovery evidence.', {
+        operational: true,
+        toolCalls: ['Create simulated ITSM incident', 'Attach diagnostic evidence'],
+      }),
+      step('vendor', 'Prepare hardware replacement case', 'vendor', 'Drafted an unsent supplier escalation with the failed line-card evidence, replacement request, and diagnostic bundle.', {
+        operational: true,
+        toolCalls: ['Build supplier diagnostic package', 'Draft RMA escalation'],
+      }),
+      step('approve', 'Approve IMS traffic failover', 'supervisor', 'Presented voice-service blast radius, redundant capacity, rollback plan, and hardware-isolation procedure for approval.', {
+        requiresApproval: true,
+        operational: true,
+        confidence: 96,
+        evidence: ['Redundant SBC capacity check', 'Call preservation plan', 'Rollback procedure', 'Emergency-calling route validation'],
+        toolCalls: ['Evaluate change policy', 'Present approval card'],
+      }),
+      step('execute', 'Drain sessions and isolate LC-3', 'remediation', 'Simulated the controlled session drain, shifted new signaling to redundant capacity, and isolated the failed line card.', {
+        operational: true,
+        evidence: ['Session-drain progress', 'SIP routing distribution', 'LC-3 isolation state'],
+        toolCalls: ['Execute IMS failover runbook', 'Retain rollback state'],
+      }),
+      step('dispatch', 'Coordinate hardware replacement', 'field', 'Prepared a voice-core technician dispatch with the line-card identity, replacement part, access requirements, and supplier case.', {
+        operational: true,
+        toolCalls: ['Check replacement inventory', 'Prepare technician dispatch'],
+      }),
+      step('validate', 'Validate voice recovery', 'validation', 'Confirmed recovery of call setup, registration, SIP errors, active sessions, enterprise trunks, and media quality.', {
+        confidence: 99,
+        evidence: ['Call setup success', 'Registration success', 'SIP 5xx rate', 'Media quality checks', 'Enterprise trunk probes'],
+        toolCalls: ['Run synthetic voice calls', 'Compare before-and-after IMS KPIs'],
+      }),
+      step('communicate', 'Prepare voice incident updates', 'communications', 'Generated unsent NOC, customer-care, enterprise, and leadership updates with the validated recovery state.', {
+        operational: true,
+        toolCalls: ['Generate NOC update', 'Prepare enterprise bulletin'],
+      }),
+      step('review', 'Close and review voice incident', 'review', 'Created the simulated post-incident report with hardware cause, failover evidence, replacement action, and resilience recommendations.'),
+    ],
+    metrics: [
+      { label: 'Call setup success', before: 71.8, after: 99.4, unit: '%', better: 'up' },
+      { label: 'Registration success', before: 83.1, after: 99.8, unit: '%', better: 'up' },
+      { label: 'SIP 5xx responses', before: 22.6, after: 0.3, unit: '%', better: 'down' },
+      { label: 'Sessions impacted', before: 32400, after: 0, unit: '', better: 'down' },
+    ],
+  },
 ]
 
 export const architectureLayers = [
@@ -248,6 +328,6 @@ export const architectureLayers = [
   { title: 'Microsoft AI', items: ['Microsoft Foundry', 'Microsoft Agent Framework', 'Foundry IQ', 'Azure OpenAI models', 'Evaluations and tracing'] },
   { title: 'Network IQ & Customer IQ', items: ['Microsoft Fabric', 'OneLake', 'Eventhouse', 'Semantic models', 'Customer-service mapping'] },
   { title: 'Integration', items: ['Model Context Protocol', 'TM Forum Open APIs', 'Azure Functions', 'Logic Apps', 'ITSM and workforce systems'] },
-  { title: 'Network & Customer Data', items: ['Fibre and optical telemetry', 'CMTS and DOCSIS', 'CPE and Wi-Fi', 'Wireless RAN', 'Alarms, tickets, contacts, policies'] },
+  { title: 'Network & Customer Data', items: ['Fibre and optical telemetry', 'CMTS and DOCSIS', 'CPE and Wi-Fi', 'Wireless RAN', 'IMS and voice signaling', 'Alarms, tickets, contacts, policies'] },
   { title: 'Security & Governance', items: ['Microsoft Entra ID', 'Microsoft Purview', 'Role-based controls', 'Human approval', 'Rollback and emergency stop'] },
 ]
